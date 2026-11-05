@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record Transaction(BigDecimal amount, String description, TransactionType transactionType,
                           LocalDateTime transactionDate) {
     public Transaction {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) < 0) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount cannot be null or negative");
         }
         if (description == null || description.isBlank()) {
@@ -23,13 +23,5 @@ public record Transaction(BigDecimal amount, String description, TransactionType
 
 
 }
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "amount=" + amount +
-                ", description='" + description + '\'' +
-                ", transactionType=" + transactionType +
-                ", transactionDate=" + transactionDate +
-                '}';
-    }
+
 }
