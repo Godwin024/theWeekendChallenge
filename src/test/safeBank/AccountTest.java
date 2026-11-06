@@ -1,6 +1,6 @@
 package safeBank;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundException;
+import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundsException;
 import dev.swizzyTheGreat.safeBank.exceptions.InvalidAccountException;
 import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
 import dev.swizzyTheGreat.safeBank.exceptions.WithdrawalLimitExceededException;
@@ -15,13 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AccountTest {
     @Test
     public void shouldCreateAccountWithValidDetails() throws InvalidAccountException {
-
         String accountName = "Godwin";
         BigDecimal balance = new BigDecimal("5000.00");
         String accountNumber = "1234567890";
-
         Account account = new Account(accountName, balance, accountNumber);
-
         assertNotNull(account);
         assertEquals(accountName, account.getAccountName());
         assertEquals(0, balance.compareTo(account.getBalance()));
@@ -97,16 +94,6 @@ public class AccountTest {
         );
     }
 
-
-    @Test
-    public void testShouldCreateAccountWithValidDetails(){
-        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
-        assertEquals("Godwin",  account.getAccountName());
-        assertEquals(0, new BigDecimal("5000.00").compareTo(account.getBalance()));
-        assertEquals("1234567890", account.getAccountNumber());
-
-    }
-
     @Test
     void shouldWithdrawMoneySuccessfullyTest() {
         Account account = new Account("Godwin", new BigDecimal("10000.00"), "1234567890");
@@ -140,7 +127,7 @@ public class AccountTest {
     void shouldRejectWithdrawalExceedingBalance() {
         Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
 
-        assertThrows(InsufficientFundException.class, () ->
+        assertThrows(InsufficientFundsException.class, () ->
                 account.withdraw(new BigDecimal("6000.00"))
         );
     }
@@ -163,5 +150,61 @@ public class AccountTest {
         assertEquals(0, new BigDecimal("50000.00").compareTo(account.getBalance()));
     }
 
+    @Test
+    void shouldNotChangeBalanceWhenWithdrawalFails() throws InvalidAccountException {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InsufficientFundsException.class, () -> account.withdraw(new BigDecimal("6000.00")));
+        assertEquals(0, new BigDecimal("5000.00").compareTo(account.getBalance()));
+    }
+
+    @Test
+    void shouldNotRecordTransactionWhenWithdrawalFails() throws InvalidAccountException {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InsufficientFundsException.class, () -> account.withdraw(new BigDecimal("6000.00")));
+        assertTrue(account.getTransactions().isEmpty());
+    }
+
+    @Test
+    void shouldRejectNegativeDepositAmountTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InvalidAmountException.class, () -> account.deposit(new BigDecimal("-500.00")));
+    }
+
+    @Test
+    void shouldRejectDepositWithMoreThanTwoDecimalPlacesTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InvalidAmountException.class, () -> account.deposit(new BigDecimal("500.123")));
+    }
+
+    @Test
+    void shouldRejectZeroWithdrawalAmountTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InvalidAmountException.class, () -> account.withdraw(BigDecimal.ZERO));
+    }
+
+    @Test
+    void shouldRejectWithdrawalWithMoreThanTwoDecimalPlacesTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InvalidAmountException.class, () -> account.withdraw(new BigDecimal("100.123")));
+    }
+
+    @Test
+    void shouldNotChangeBalanceOrHistoryWhenDepositFailsTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InvalidAmountException.class, () -> account.deposit(new BigDecimal("-500.00")));
+
+        assertEquals(0, new BigDecimal("5000.00").compareTo(account.getBalance()));
+        assertTrue(account.getTransactions().isEmpty());
+    }
+
+    @Test
+    void shouldAllowSuccessfulDepositAfterFailedWithdrawalTest() {
+        Account account = new Account("Godwin", new BigDecimal("5000.00"), "1234567890");
+        assertThrows(InsufficientFundsException.class, () -> account.withdraw(new BigDecimal("6000.00")));
+        account.deposit(new BigDecimal("2000.00"));
+        assertEquals(0, new BigDecimal("7000.00").compareTo(account.getBalance()));
+        assertEquals(1, account.getTransactions().size());
+        assertEquals(TransactionType.DEPOSIT, account.getTransactions().get(0).transactionType());
+    }
 
 }

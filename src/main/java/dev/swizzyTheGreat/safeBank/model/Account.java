@@ -1,6 +1,6 @@
 package dev.swizzyTheGreat.safeBank.model;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundException;
+import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundsException;
 import dev.swizzyTheGreat.safeBank.exceptions.InvalidAccountException;
 import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
 import dev.swizzyTheGreat.safeBank.exceptions.WithdrawalLimitExceededException;
@@ -64,7 +64,7 @@ public class Account {
 
     public void deposit(BigDecimal depositAmount) {
         if(depositAmount == null || depositAmount.compareTo(BigDecimal.ZERO) <= 0){
-            throw new InvalidAmountException("Deposit amount cannot be null or negative");
+            throw new InvalidAmountException("Deposit amount cannot be null and must be greater than zero");
         }
 
         if(depositAmount.scale() > 2){
@@ -84,7 +84,7 @@ public class Account {
 
     public void withdraw(BigDecimal withdrawalAmount) {
         if(withdrawalAmount == null || withdrawalAmount.compareTo(BigDecimal.ZERO) <= 0){
-            throw new InvalidAmountException("Withdrawal amount cannot be null or negative");
+            throw new InvalidAmountException("Withdrawal amount cannot be null and must be greater than zero");
         }
 
         if(withdrawalAmount.scale() > 2){
@@ -97,8 +97,8 @@ public class Account {
         }
 
         if(withdrawalAmount.compareTo(this.balance) > 0){
-            throw new InsufficientFundException(
-                    String.format("Insufficient funds. Available balance: .2f", this.balance)
+            throw new InsufficientFundsException(
+                    String.format("Insufficient funds. Available balance: %.2f", this.balance)
             );
 
         }
