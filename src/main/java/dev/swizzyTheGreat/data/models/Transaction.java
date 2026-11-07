@@ -1,6 +1,6 @@
-package dev.swizzyTheGreat.safeBank.model;
+package dev.swizzyTheGreat.data.models;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
+import dev.swizzyTheGreat.exceptions.InvalidAmountException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

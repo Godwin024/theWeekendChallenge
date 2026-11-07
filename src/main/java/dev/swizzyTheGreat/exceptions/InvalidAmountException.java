@@ -1,4 +1,4 @@
-package dev.swizzyTheGreat.safeBank.exceptions;
+package dev.swizzyTheGreat.exceptions;
 
 public class InvalidAmountException extends RuntimeException {
     public InvalidAmountException(String message) {

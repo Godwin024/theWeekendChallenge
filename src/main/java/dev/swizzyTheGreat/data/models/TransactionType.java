@@ -1,4 +1,4 @@
-package dev.swizzyTheGreat.safeBank.model;
+package dev.swizzyTheGreat.data.models;
 
 public enum TransactionType {
     DEPOSIT,

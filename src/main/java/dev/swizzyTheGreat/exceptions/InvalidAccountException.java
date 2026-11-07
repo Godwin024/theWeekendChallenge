@@ -1,4 +1,4 @@
-package dev.swizzyTheGreat.safeBank.exceptions;
+package dev.swizzyTheGreat.exceptions;
 
 public class InvalidAccountException extends RuntimeException {
     public InvalidAccountException(String message) {

@@ -1,4 +1,4 @@
-package dev.swizzyTheGreat.safeBank.exceptions;
+package dev.swizzyTheGreat.exceptions;
 
 public class InsufficientFundsException extends RuntimeException {
     public InsufficientFundsException(String message) {

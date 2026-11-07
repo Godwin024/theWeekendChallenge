@@ -1,11 +1,11 @@
 package safeBank;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundsException;
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAccountException;
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
-import dev.swizzyTheGreat.safeBank.exceptions.WithdrawalLimitExceededException;
-import dev.swizzyTheGreat.safeBank.model.Account;
-import dev.swizzyTheGreat.safeBank.model.TransactionType;
+import dev.swizzyTheGreat.exceptions.InsufficientFundsException;
+import dev.swizzyTheGreat.exceptions.InvalidAccountException;
+import dev.swizzyTheGreat.exceptions.InvalidAmountException;
+import dev.swizzyTheGreat.exceptions.WithdrawalLimitExceededException;
+import dev.swizzyTheGreat.data.models.Account;
+import dev.swizzyTheGreat.data.models.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

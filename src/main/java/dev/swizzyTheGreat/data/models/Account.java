@@ -1,9 +1,9 @@
-package dev.swizzyTheGreat.safeBank.model;
+package dev.swizzyTheGreat.data.models;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InsufficientFundsException;
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAccountException;
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
-import dev.swizzyTheGreat.safeBank.exceptions.WithdrawalLimitExceededException;
+import dev.swizzyTheGreat.exceptions.InsufficientFundsException;
+import dev.swizzyTheGreat.exceptions.InvalidAccountException;
+import dev.swizzyTheGreat.exceptions.InvalidAmountException;
+import dev.swizzyTheGreat.exceptions.WithdrawalLimitExceededException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ public class Account {
         if(balance.scale() > 2){
             throw new InvalidAccountException("Balance cannot be have more than 2 decimal places");
         }
-
         if (accountNumber == null || accountNumber.isBlank()) {
             throw new InvalidAccountException("Account number cannot be empty");
         }
@@ -38,16 +37,12 @@ public class Account {
     public String getAccountName() {
         return accountName;
     }
-
     public BigDecimal getBalance() {
         return balance;
     }
-
-
     public String getAccountNumber() {
         return accountNumber;
     }
-
     public List<Transaction> getTransactions() {
         return Collections.unmodifiableList(transactionsHistory);
     }
@@ -66,53 +61,52 @@ public class Account {
         if(depositAmount == null || depositAmount.compareTo(BigDecimal.ZERO) <= 0){
             throw new InvalidAmountException("Deposit amount cannot be null and must be greater than zero");
         }
-
         if(depositAmount.scale() > 2){
             throw new InvalidAmountException("Deposit amount cannot be have more than 2 decimal places");
         }
         this.balance = this.balance.add(depositAmount);
-
         //make i record the transaction history first
         transactionsHistory.add(new Transaction(
                 depositAmount,
                 "Deposit Successfully",
                 TransactionType.DEPOSIT,
-                java.time.LocalDateTime.now()
-        ));
-
+                java.time.LocalDateTime.now()));
     }
 
     public void withdraw(BigDecimal withdrawalAmount) {
         if(withdrawalAmount == null || withdrawalAmount.compareTo(BigDecimal.ZERO) <= 0){
             throw new InvalidAmountException("Withdrawal amount cannot be null and must be greater than zero");
         }
-
         if(withdrawalAmount.scale() > 2){
             throw new InvalidAmountException("Withdrawal amount cannot be have more than 2 decimal places");
         }
-
         BigDecimal withdrawalLimit = new BigDecimal("100000");
         if(withdrawalAmount.compareTo(withdrawalLimit) > 0){
             throw new WithdrawalLimitExceededException("Withdrawal limit exceeded");
         }
-
         if(withdrawalAmount.compareTo(this.balance) > 0){
             throw new InsufficientFundsException(
-                    String.format("Insufficient funds. Available balance: %.2f", this.balance)
-            );
-
+                    String.format("Insufficient funds. Available balance: %.2f", this.balance));
         }
-
         this.balance = this.balance.subtract(withdrawalAmount);
-
         transactionsHistory.add(new Transaction(
                 withdrawalAmount,
                 "Withdrawal Successfully",
                 TransactionType.WITHDRAWAL,
-                java.time.LocalDateTime.now()
+                java.time.LocalDateTime.now()));
+    }
 
-        ));
+    public void rollbackWithdrawal(BigDecimal amount) {
+        if(transactionsHistory.isEmpty()){
+            throw new IllegalStateException("no transactions available rollback");
+        }
 
+        Transaction lastTransaction = transactionsHistory.get(transactionsHistory.size()-1);
+        if(lastTransaction.transactionType() != TransactionType.WITHDRAWAL || lastTransaction.amount().compareTo(amount) !=0){
+            throw new IllegalStateException("current transaction is not the expected withdrawal");
+        }
+        this.balance = this.balance.add(amount);
+        transactionsHistory.remove(transactionsHistory.size()-1);
 
     }
 }

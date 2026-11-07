@@ -1,8 +1,8 @@
 package safeBank;
 
-import dev.swizzyTheGreat.safeBank.exceptions.InvalidAmountException;
-import dev.swizzyTheGreat.safeBank.model.Transaction;
-import dev.swizzyTheGreat.safeBank.model.TransactionType;
+import dev.swizzyTheGreat.exceptions.InvalidAmountException;
+import dev.swizzyTheGreat.data.models.Transaction;
+import dev.swizzyTheGreat.data.models.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
